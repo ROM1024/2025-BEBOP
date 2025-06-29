@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, send_file
 import os
-import json
 import numpy as np
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -12,10 +11,7 @@ from flask_limiter.util import get_remote_address
 from flask_httpauth import HTTPBasicAuth
 from filelock import FileLock
 import traceback
-import time  # 添加缺失的time模块导入
-
-# 加载 .env 文件
-load_dotenv()
+import sys
 
 app = Flask(__name__)
 
@@ -31,10 +27,18 @@ limiter = Limiter(
 # 存储用户日程和反馈的数据结构
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
-# 获取脚本所在的文件夹路径
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# 构建 Excel 文件的完整路径
-EXCEL_FILE_PATH = os.path.join(SCRIPT_DIR, "记录.xlsx")
+if getattr(sys, 'frozen', False):
+    # 打包后的环境：使用 sys.executable 获取 exe 路径
+    BASE_DIR = os.path.dirname(sys.executable)  # main.exe 所在目录
+else:
+    # 开发环境：使用 __file__ 获取脚本路径
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 加载 .env 文件（打包时已包含）
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+# 构建 Excel 文件路径（保存到 exe 同级目录）
+EXCEL_FILE_PATH = os.path.join(BASE_DIR, "记录.xlsx")
 
 # 认证配置
 @auth.verify_password

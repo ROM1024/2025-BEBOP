@@ -7,13 +7,19 @@ import os
 import re
 import tkinter.simpledialog as sd
 import json  # 添加JSON支持
-import threading  # 添加线程支持
+import sys
 from flask_app import LLMAPI  # 从flask_app.py中导入LLMAPI类
 
-# 获取脚本所在的文件夹路径
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# 构建 Excel 文件的完整路径
-EXCEL_FILE_PATH = os.path.join(SCRIPT_DIR, "记录.xlsx")
+if getattr(sys, 'frozen', False):
+    # 打包后的环境：使用 sys.executable 获取 exe 路径
+    BASE_DIR = os.path.dirname(sys.executable)  # main.exe 所在目录
+else:
+    # 开发环境：使用 __file__ 获取脚本路径
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+# 构建 Excel 文件路径（保存到 exe 同级目录）
+EXCEL_FILE_PATH = os.path.join(BASE_DIR, "记录.xlsx")
 
 class CalendarApp:
     def __init__(self, root):
@@ -607,15 +613,14 @@ class CalendarApp:
                         btn = self.day_buttons[week_idx][day_idx]
                         btn.config(text=str(day))
                         
-                        # 标记今天
-                        today = datetime.now()
-                        if year == today.year and month == today.month and day == today.day:
-                            btn.config(bg="#FFD700")
-                        
                         # 标记有事件的日期
                         date_str = f"{year}-{month:02d}-{day:02d}"
                         if date_str in self.events and self.events[date_str]:
                             btn.config(bg="#ADD8E6")
+                        # 标记今天
+                        today = datetime.now()
+                        if year == today.year and month == today.month and day == today.day:
+                            btn.config(bg="#FFD700")
             print(f"日历更新为: {year}年{month}月")
         except Exception as e:
             print(f"更新日历时出错: {str(e)}")
@@ -625,6 +630,17 @@ class CalendarApp:
         self.month_var.set(month_name[today.month])
         self.year_var.set(str(today.year))
         self.update_calendar()
+
+        year = int(self.year_var.get())
+        month = list(month_name).index(self.month_var.get())
+        cal = monthcalendar(year, month)
+        day = today.day
+        for row_idx, week in enumerate(cal):
+            if day in week:
+                col = week.index(day)
+                row = row_idx + 1  # 注意: 行索引从1开始
+                break
+        self.show_events(row, col)
 
     def show_events(self, row, col):
         try:

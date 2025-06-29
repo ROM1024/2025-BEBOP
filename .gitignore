@@ -1,1 +1,6 @@
+__pycache__/
+*.pyc
+build/
+dist/
+main.spec
 .env
