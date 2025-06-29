@@ -49,7 +49,7 @@ python main.py
 
 下载预编译版本
 1. 点击下方链接下载：
-(https://github.com/ROM1024/2025_BEBOP/releases/download/v1.0.0/main.exe)
+(https://github.com/ROM1024/2025_BEBOP/releases/download/v1.0.0/BEBOP.exe)
 
 2. 下载后直接运行 `BEBOP.exe`
 
@@ -69,5 +69,5 @@ python main.py
 七、贡献与反馈
 如果你对本项目有任何建议或发现了问题，请在 GitHub 上提交 Issue 或 Pull Request。
 
-演示文档：
+演示视频：
 https://disk.pku.edu.cn/link/AAB9EB65B5F6314C56820CC587771131DD
